@@ -241,7 +241,8 @@ MonoBehaviour:
   acceleration: 10
   braking: 10
   maxSpeed: 2
-  rotationSpeed: 15
+  rotationSpeed: 80
+  viewUpDownRotationSpeed: 50
   _IsGrounded: 0
   _Velocity: {x: 0, y: 0, z: 0}
 --- !u!114 &4962786909245496582

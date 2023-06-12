@@ -16,6 +16,7 @@ namespace ShooterPhotonFusion.Movement
         public float braking = 10.0f;
         public float maxSpeed = 2.0f;
         public float rotationSpeed = 15.0f;
+        public float viewUpDownRotationSpeed = 50f;
 
         [Networked] [HideInInspector] public bool IsGrounded { get; set; }
 
@@ -120,6 +121,11 @@ namespace ShooterPhotonFusion.Movement
 
             Velocity = (transform.position - previousPos) * Runner.Simulation.Config.TickRate;
             IsGrounded = Controller.isGrounded;
+        }
+
+        public void Rotate(float rotationY)
+        {
+            transform.Rotate(0, rotationY * Runner.DeltaTime * rotationSpeed, 0);
         }
     }
 }

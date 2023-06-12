@@ -8,10 +8,6 @@ namespace ShooterPhotonFusion.Network
     {
         public static NetworkPlayer Local { get; set; }
 
-        private void Start()
-        {
-        }
-
         public override void Spawned()
         {
             if (Object.HasInputAuthority)
