@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Fusion;
 using Fusion.Sockets;
+using ShooterPhotonFusion.Input;
 using UnityEngine;
 
 namespace ShooterPhotonFusion.Network
@@ -9,6 +10,8 @@ namespace ShooterPhotonFusion.Network
     public class Spawner : MonoBehaviour, INetworkRunnerCallbacks
     {
         [SerializeField] private NetworkPlayer playerPrefab;
+
+        private CharacterInputHandler _characterInputHandler;
         
         public void OnConnectedToServer(NetworkRunner runner)
         {
@@ -28,7 +31,11 @@ namespace ShooterPhotonFusion.Network
 
         public void OnInput(NetworkRunner runner, NetworkInput input)
         {
-            
+            if (_characterInputHandler == null && NetworkPlayer.Local != null)
+                _characterInputHandler = NetworkPlayer.Local.GetComponent<CharacterInputHandler>();
+
+            if (_characterInputHandler != null)
+                input.Set(_characterInputHandler.GetNetworkInput());
         }
 
         public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
