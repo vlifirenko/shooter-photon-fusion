@@ -11,6 +11,7 @@ namespace ShooterPhotonFusion.Input
         private Vector2 _moveInputVector = Vector2.zero;
         private Vector2 _viewInputVector = Vector2.zero;
         private bool _isJumpPressed;
+        private bool _isFirePressed;
 
         private void Awake()
         {
@@ -34,6 +35,9 @@ namespace ShooterPhotonFusion.Input
             if (UnityEngine.Input.GetButtonDown("Jump"))
                 _isJumpPressed = true;
             
+            if (UnityEngine.Input.GetButtonDown("Fire1"))
+                _isFirePressed = true;
+            
             _localCameraHandler.SetViewInputVector(_viewInputVector);
         }
 
@@ -43,10 +47,12 @@ namespace ShooterPhotonFusion.Input
             {
                 MovementInput = _moveInputVector,
                 AimForwardVector = _localCameraHandler.transform.forward,
-                IsJumpPressed = _isJumpPressed
+                IsJumpPressed = _isJumpPressed,
+                IsFirePressed =  _isFirePressed,
             };
 
             _isJumpPressed = false;
+            _isFirePressed = false;
             
             return networkInputData;
         }

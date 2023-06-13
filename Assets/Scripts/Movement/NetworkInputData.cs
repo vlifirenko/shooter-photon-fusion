@@ -8,5 +8,6 @@ namespace ShooterPhotonFusion.Movement
         public Vector2 MovementInput;
         public Vector3 AimForwardVector;
         public NetworkBool IsJumpPressed;
+        public NetworkBool IsFirePressed;
     }
 }
