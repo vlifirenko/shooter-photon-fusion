@@ -6,29 +6,22 @@ namespace ShooterPhotonFusion.Movement
     public class CharacterMovementHandler : NetworkBehaviour
     {
         private NetworkCharacterControllerPrototypeCustom _networkCharacterControllerPrototypeCustom;
-        private Camera _localCamera;
-        private Vector2 _viewInput;
-        private float _cameraRotationX;
+        private UnityEngine.Camera _localCamera;
 
         private void Awake()
         {
             _networkCharacterControllerPrototypeCustom = GetComponent<NetworkCharacterControllerPrototypeCustom>();
-            _localCamera = GetComponentInChildren<Camera>();
-        }
-
-        private void Update()
-        {
-            _cameraRotationX += _viewInput.y * Time.deltaTime * _networkCharacterControllerPrototypeCustom.viewUpDownRotationSpeed;
-            _cameraRotationX = Mathf.Clamp(_cameraRotationX, -90, 90);
-
-            _localCamera.transform.localRotation = Quaternion.Euler(_cameraRotationX, 0, 0);
+            _localCamera = GetComponentInChildren<UnityEngine.Camera>();
         }
 
         public override void FixedUpdateNetwork()
         {
             if (GetInput(out NetworkInputData networkInputData))
             {
-                _networkCharacterControllerPrototypeCustom.Rotate(networkInputData.RotationInput);
+                transform.forward = networkInputData.AimForwardVector;
+                var rotation = transform.rotation;
+                rotation.eulerAngles = new Vector3(0, rotation.eulerAngles.y, rotation.eulerAngles.z);
+                transform.rotation = rotation;
                 
                 var moveDirection = transform.forward * networkInputData.MovementInput.y +
                                     transform.right * networkInputData.MovementInput.x;
@@ -47,7 +40,5 @@ namespace ShooterPhotonFusion.Movement
             if (transform.position.y < -12)
                 transform.position = Utils.Utils.GetRandomSpawnPoint();
         }
-
-        public void SetViewInputVector(Vector2 viewInput) => _viewInput = viewInput;
     }
 }

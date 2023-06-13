@@ -16,13 +16,13 @@ namespace ShooterPhotonFusion.Network
                 Local = this;
                 Utils.Utils.SetRendererLayerInChildren(playerModel, LayerMask.NameToLayer("LocalPlayerModel"));
                 
-                Camera.main.gameObject.SetActive(false);
+                UnityEngine.Camera.main.gameObject.SetActive(false);
                 
                 Debug.Log("Spawned local player");
             }
             else
             {
-                var localCamera = GetComponentInChildren<Camera>();
+                var localCamera = GetComponentInChildren<UnityEngine.Camera>();
                 localCamera.enabled = false;
 
                 var audioListener = GetComponentInChildren<AudioListener>();
@@ -30,6 +30,8 @@ namespace ShooterPhotonFusion.Network
                 
                 Debug.Log("Spawned remote player");
             }
+
+            transform.name = $"P_{Object.Id}";
         }
 
         public void PlayerLeft(PlayerRef player)

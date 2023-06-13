@@ -6,7 +6,7 @@ namespace ShooterPhotonFusion.Movement
     public struct NetworkInputData : INetworkInput
     {
         public Vector2 MovementInput;
-        public float RotationInput;
+        public Vector3 AimForwardVector;
         public NetworkBool IsJumpPressed;
     }
 }

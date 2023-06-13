@@ -1,4 +1,5 @@
 ﻿using System;
+using ShooterPhotonFusion.Camera;
 using ShooterPhotonFusion.Movement;
 using UnityEngine;
 
@@ -6,14 +7,14 @@ namespace ShooterPhotonFusion.Input
 {
     public class CharacterInputHandler : MonoBehaviour
     {
-        private CharacterMovementHandler _characterMovementHandler;
+        private LocalCameraHandler _localCameraHandler;
         private Vector2 _moveInputVector = Vector2.zero;
         private Vector2 _viewInputVector = Vector2.zero;
         private bool _isJumpPressed;
 
         private void Awake()
         {
-            _characterMovementHandler = GetComponent<CharacterMovementHandler>();
+            _localCameraHandler = GetComponentInChildren<LocalCameraHandler>();
         }
 
         private void Start()
@@ -26,13 +27,14 @@ namespace ShooterPhotonFusion.Input
         {
             _viewInputVector.x = UnityEngine.Input.GetAxis("Mouse X");
             _viewInputVector.y = -UnityEngine.Input.GetAxis("Mouse Y");
-
-            _characterMovementHandler.SetViewInputVector(_viewInputVector);
             
             _moveInputVector.x = UnityEngine.Input.GetAxis("Horizontal");
             _moveInputVector.y = UnityEngine.Input.GetAxis("Vertical");
 
-            //_isJumpPressed = UnityEngine.Input.GetKeyDown("Jump");
+            if (UnityEngine.Input.GetButtonDown("Jump"))
+                _isJumpPressed = true;
+            
+            _localCameraHandler.SetViewInputVector(_viewInputVector);
         }
 
         public NetworkInputData GetNetworkInput()
@@ -40,9 +42,12 @@ namespace ShooterPhotonFusion.Input
             var networkInputData = new NetworkInputData
             {
                 MovementInput = _moveInputVector,
-                RotationInput = _viewInputVector.x,
+                AimForwardVector = _localCameraHandler.transform.forward,
                 IsJumpPressed = _isJumpPressed
             };
+
+            _isJumpPressed = false;
+            
             return networkInputData;
         }
     }
