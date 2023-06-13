@@ -1,5 +1,4 @@
-﻿using System;
-using ShooterPhotonFusion.Camera;
+﻿using ShooterPhotonFusion.Camera;
 using ShooterPhotonFusion.Movement;
 using UnityEngine;
 
@@ -10,12 +9,14 @@ namespace ShooterPhotonFusion.Input
         private LocalCameraHandler _localCameraHandler;
         private Vector2 _moveInputVector = Vector2.zero;
         private Vector2 _viewInputVector = Vector2.zero;
+        private CharacterMovementHandler _characterMovementHandler;
         private bool _isJumpPressed;
         private bool _isFirePressed;
 
         private void Awake()
         {
             _localCameraHandler = GetComponentInChildren<LocalCameraHandler>();
+            _characterMovementHandler = GetComponent<CharacterMovementHandler>();
         }
 
         private void Start()
@@ -26,6 +27,9 @@ namespace ShooterPhotonFusion.Input
 
         private void Update()
         {
+            if (!_characterMovementHandler.Object.HasInputAuthority)
+                return;
+
             _viewInputVector.x = UnityEngine.Input.GetAxis("Mouse X");
             _viewInputVector.y = -UnityEngine.Input.GetAxis("Mouse Y");
             
