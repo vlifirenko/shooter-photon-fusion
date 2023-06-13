@@ -37,7 +37,15 @@ namespace ShooterPhotonFusion.Movement
 
                 if (networkInputData.IsJumpPressed)
                     _networkCharacterControllerPrototypeCustom.Jump();
+                
+                CheckFallRespawn();
             }
+        }
+
+        private void CheckFallRespawn()
+        {
+            if (transform.position.y < -12)
+                transform.position = Utils.Utils.GetRandomSpawnPoint();
         }
 
         public void SetViewInputVector(Vector2 viewInput) => _viewInput = viewInput;
