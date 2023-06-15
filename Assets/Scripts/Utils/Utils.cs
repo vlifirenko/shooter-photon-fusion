@@ -9,7 +9,12 @@ namespace ShooterPhotonFusion.Utils
         public static void SetRendererLayerInChildren(Transform transform, int layerNumber)
         {
             foreach (Transform child in transform.GetComponentInChildren<Transform>(true))
+            {
+                if (child.CompareTag("IgnoreLayerChange"))
+                    continue;
+                
                 child.gameObject.layer = layerNumber;
+            }
         }
     }
 }
