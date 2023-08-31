@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using Fusion;
+using ShooterPhotonFusion.Health;
 using ShooterPhotonFusion.Movement;
 using UnityEngine;
 
@@ -44,6 +45,9 @@ namespace ShooterPhotonFusion.Weapon
             {
                 Debug.Log($"{Time.time} {transform.name} hit hitbox {hitInfo.Hitbox.transform.root.name}");
 
+                if (Object.HasStateAuthority)
+                    hitInfo.Hitbox.transform.root.GetComponent<HealthHandler>().OnTakeDamage();
+                
                 isHitOtherPlayer = true;
             }
             else if (hitInfo.Collider != null)
@@ -71,7 +75,7 @@ namespace ShooterPhotonFusion.Weapon
 
         private static void OnFireChanged(Changed<WeaponHandler> changed)
         {
-            Debug.Log($"{Time.time} OnFireChanged value {changed.Behaviour.IsFiring}");
+            //Debug.Log($"{Time.time} OnFireChanged value {changed.Behaviour.IsFiring}");
 
             var isFiringCurrent = changed.Behaviour.IsFiring;
             changed.LoadOld();

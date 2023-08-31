@@ -172,6 +172,7 @@ GameObject:
   - component: {fileID: 7721733899980731619}
   - component: {fileID: -7198615014590709140}
   - component: {fileID: 2123123472246852020}
+  - component: {fileID: 502443865022374157}
   m_Layer: 0
   m_Name: NetworkPlayer
   m_TagString: Untagged
@@ -263,6 +264,7 @@ MonoBehaviour:
   - {fileID: 4962786909245496582}
   - {fileID: -7198615014590709140}
   - {fileID: 2123123472246852020}
+  - {fileID: 502443865022374157}
   SimulationBehaviours: []
 --- !u!114 &4555405796112217672
 MonoBehaviour:
@@ -363,6 +365,19 @@ MonoBehaviour:
   GizmosColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   Hitboxes:
   - {fileID: 6777242738071581779}
+--- !u!114 &502443865022374157
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3847348582273249030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80a07fdc1c14460683720ad006d4075a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _interpolationDataSource: 0
 --- !u!1 &4287845078942599699
 GameObject:
   m_ObjectHideFlags: 0
