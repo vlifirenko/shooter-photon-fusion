@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using Fusion;
 using ShooterPhotonFusion.Health;
 using ShooterPhotonFusion.Movement;
@@ -14,10 +15,16 @@ namespace ShooterPhotonFusion.Weapon
         [Networked(OnChanged = nameof(OnFireChanged))]
         public bool IsFiring { get; set; }
 
+        private HealthHandler _healthHandler;
         private float _lastTimeFired;
+
+        private void Awake() => _healthHandler = GetComponent<HealthHandler>();
 
         public override void FixedUpdateNetwork()
         {
+            if (_healthHandler.IsDead)
+                return;
+            
             if (GetInput(out NetworkInputData networkInputData))
             {
                 if (networkInputData.IsFirePressed)
@@ -55,6 +62,7 @@ namespace ShooterPhotonFusion.Weapon
                 Debug.Log($"{Time.time} {transform.name} hit PhysX {hitInfo.Collider.transform.name}");
             }
 
+            // debug
             if (isHitOtherPlayer)
                 Debug.DrawRay(aimPoint.position, aimForwardVector * hitDistance, Color.red, 1);
             else
