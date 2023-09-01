@@ -2,8 +2,10 @@
 using System.Collections;
 using Fusion;
 using ShooterPhotonFusion.Movement;
+using ShooterPhotonFusion.Network;
 using UnityEngine;
 using UnityEngine.UI;
+using NetworkPlayer = ShooterPhotonFusion.Network.NetworkPlayer;
 
 namespace ShooterPhotonFusion.Health
 {
@@ -30,11 +32,15 @@ namespace ShooterPhotonFusion.Health
 
         private HitboxRoot _hitboxRoot;
         private CharacterMovementHandler _characterMovementHandler;
+        private NetworkPlayer _networkPlayer;
+        private NetworkInGameMessages _networkInGameMessages;
 
         private void Awake()
         {
             _characterMovementHandler = GetComponent<CharacterMovementHandler>();
             _hitboxRoot = GetComponent<HitboxRoot>();
+            _networkPlayer = GetComponent<NetworkPlayer>();
+            _networkInGameMessages = GetComponent<NetworkInGameMessages>();
         }
 
         private void Start()
@@ -65,12 +71,12 @@ namespace ShooterPhotonFusion.Health
         private IEnumerator ServerReviveCo()
         {
             yield return new WaitForSeconds(2f);
-            
+
             _characterMovementHandler.RequestRespawn();
         }
 
         // only called on server
-        public void OnTakeDamage()
+        public void OnTakeDamage(string damageCausedByPlayerNickname)
         {
             if (IsDead)
                 return;
@@ -81,10 +87,13 @@ namespace ShooterPhotonFusion.Health
 
             if (Health <= 0)
             {
+                _networkInGameMessages.SendInGameRPCMessage(damageCausedByPlayerNickname,
+                    $"Killed <b>{_networkPlayer.NickName.ToString()}</b>");
+
                 Debug.Log($"{Time.time} {transform.name} died");
 
                 StartCoroutine(ServerReviveCo());
-                
+
                 IsDead = true;
             }
         }
@@ -141,7 +150,7 @@ namespace ShooterPhotonFusion.Health
 
             if (Object.HasInputAuthority)
                 uiOnHitImage.color = new Color(0, 0, 0, 0);
-            
+
             playerModel.gameObject.SetActive(true);
             _hitboxRoot.HitboxRootActive = true;
             _characterMovementHandler.SetCharacterControllerEnabled(true);

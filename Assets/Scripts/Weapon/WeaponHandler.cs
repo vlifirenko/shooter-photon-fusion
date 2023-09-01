@@ -4,6 +4,7 @@ using Fusion;
 using ShooterPhotonFusion.Health;
 using ShooterPhotonFusion.Movement;
 using UnityEngine;
+using NetworkPlayer = ShooterPhotonFusion.Network.NetworkPlayer;
 
 namespace ShooterPhotonFusion.Weapon
 {
@@ -16,9 +17,14 @@ namespace ShooterPhotonFusion.Weapon
         public bool IsFiring { get; set; }
 
         private HealthHandler _healthHandler;
+        private NetworkPlayer _networkPlayer;
         private float _lastTimeFired;
 
-        private void Awake() => _healthHandler = GetComponent<HealthHandler>();
+        private void Awake()
+        {
+            _healthHandler = GetComponent<HealthHandler>();
+            _networkPlayer = GetComponent<NetworkPlayer>();
+        }
 
         public override void FixedUpdateNetwork()
         {
@@ -40,7 +46,7 @@ namespace ShooterPhotonFusion.Weapon
             StartCoroutine(FireEffectCo());
 
             Runner.LagCompensation.Raycast(aimPoint.position, aimForwardVector, 100, Object.InputAuthority, out var hitInfo,
-                collisionLayers, HitOptions.IncludePhysX);
+                collisionLayers, HitOptions.IgnoreInputAuthority);
 
             var hitDistance = 100f;
             var isHitOtherPlayer = false;
@@ -53,7 +59,7 @@ namespace ShooterPhotonFusion.Weapon
                 Debug.Log($"{Time.time} {transform.name} hit hitbox {hitInfo.Hitbox.transform.root.name}");
 
                 if (Object.HasStateAuthority)
-                    hitInfo.Hitbox.transform.root.GetComponent<HealthHandler>().OnTakeDamage();
+                    hitInfo.Hitbox.transform.root.GetComponent<HealthHandler>().OnTakeDamage(_networkPlayer.NickName.ToString());
                 
                 isHitOtherPlayer = true;
             }

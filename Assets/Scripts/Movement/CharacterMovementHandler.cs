@@ -1,6 +1,8 @@
 ﻿using Fusion;
 using ShooterPhotonFusion.Health;
+using ShooterPhotonFusion.Network;
 using UnityEngine;
+using NetworkPlayer = ShooterPhotonFusion.Network.NetworkPlayer;
 
 namespace ShooterPhotonFusion.Movement
 {
@@ -8,20 +10,24 @@ namespace ShooterPhotonFusion.Movement
     {
         private NetworkCharacterControllerPrototypeCustom _networkCharacterControllerPrototypeCustom;
         private HealthHandler _healthHandler;
+        private NetworkInGameMessages _networkInGameMessages;
+        private NetworkPlayer _networkPlayer;
         
-        private bool _isRespawnRequsted = false;
+        private bool _isRespawnRequested = false;
 
         private void Awake()
         {
             _networkCharacterControllerPrototypeCustom = GetComponent<NetworkCharacterControllerPrototypeCustom>();
             _healthHandler = GetComponent<HealthHandler>();
+            _networkInGameMessages = GetComponent<NetworkInGameMessages>();
+            _networkPlayer = GetComponent<NetworkPlayer>();
         }
 
         public override void FixedUpdateNetwork()
         {
             if (Object.HasStateAuthority)
             {
-                if (_isRespawnRequsted)
+                if (_isRespawnRequested)
                 {
                     Respawn();
                     return;
@@ -57,12 +63,14 @@ namespace ShooterPhotonFusion.Movement
             {
                 if (Object.HasStateAuthority)
                 {
+                    _networkInGameMessages.SendInGameRPCMessage(_networkPlayer.NickName.ToString(), "fell off the world");
+                    
                     Respawn();
                 }
             }
         }
 
-        public void RequestRespawn() => _isRespawnRequsted = true;
+        public void RequestRespawn() => _isRespawnRequested = true;
 
         private void Respawn()
         {
@@ -70,7 +78,7 @@ namespace ShooterPhotonFusion.Movement
 
             _healthHandler.OnRespawned();
             
-            _isRespawnRequsted = false;
+            _isRespawnRequested = false;
         }
 
         public void SetCharacterControllerEnabled(bool isEnabled) => _networkCharacterControllerPrototypeCustom.Controller.enabled = isEnabled;
