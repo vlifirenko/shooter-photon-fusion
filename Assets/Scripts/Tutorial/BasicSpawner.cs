@@ -14,10 +14,12 @@ namespace ShooterPhotonFusion.Tutorial
         private NetworkRunner _runner;
         private readonly Dictionary<PlayerRef, NetworkObject> _spawnedCharacters = new Dictionary<PlayerRef, NetworkObject>();
         private bool _mouseButton0;
+        private bool _mouseButton1;
 
         private void Update()
         {
-            _mouseButton0 = _mouseButton0 | UnityEngine.Input.GetMouseButton(0);
+            _mouseButton0 |= UnityEngine.Input.GetMouseButton(0);
+            _mouseButton1 |= UnityEngine.Input.GetMouseButton(1);
         }
 
         private async void StartGame(GameMode mode)
@@ -84,6 +86,10 @@ namespace ShooterPhotonFusion.Tutorial
             if (_mouseButton0)
                 data.Buttons |= NetworkInputData.MOUSEBUTTON1;
             _mouseButton0 = false;
+            
+            if (_mouseButton1)
+                data.Buttons |= NetworkInputData.MOUSEBUTTON2;
+            _mouseButton1 = false;
             
             input.Set(data);
         }
