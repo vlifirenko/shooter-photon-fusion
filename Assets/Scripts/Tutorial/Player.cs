@@ -1,4 +1,6 @@
-﻿using Fusion;
+﻿using System;
+using Fusion;
+using TMPro;
 using UnityEngine;
 
 namespace ShooterPhotonFusion.Tutorial
@@ -10,15 +12,20 @@ namespace ShooterPhotonFusion.Tutorial
 
         [Networked(OnChanged = nameof(OnBallSpawned))]
         public NetworkBool Spawned { get; set; }
-        
+
         private NetworkCharacterControllerPrototype _cc;
+        private TMP_Text _messages;
+
         private Vector3 _forward;
 
         [Networked] private TickTimer delay { get; set; }
 
-        private void Awake()
+        private void Awake() => _cc = GetComponent<NetworkCharacterControllerPrototype>();
+
+        private void Update()
         {
-            _cc = GetComponent<NetworkCharacterControllerPrototype>();
+            if (Object.HasInputAuthority && UnityEngine.Input.GetKeyDown(KeyCode.R))
+                RPC_SendMessage("Hey Mate!");
         }
 
         public override void FixedUpdateNetwork()
@@ -58,12 +65,24 @@ namespace ShooterPhotonFusion.Tutorial
         public override void Render()
         {
             var material = GetComponentInChildren<Renderer>().material;
-            material.color = Color.Lerp(material.color, Color.blue, Time.deltaTime );
+            material.color = Color.Lerp(material.color, Color.blue, Time.deltaTime);
         }
 
         public static void OnBallSpawned(Changed<Player> changed)
+            => changed.Behaviour.GetComponentInChildren<Renderer>().material.color = Color.white;
+
+        [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+        public void RPC_SendMessage(string message, RpcInfo info = default)
         {
-            changed.Behaviour.GetComponentInChildren<Renderer>().material.color = Color.white;
-        } 
+            if (message == null)
+                _messages = FindObjectOfType<TMP_Text>();
+            
+            if (info.IsInvokeLocal)
+                message = $"You said: {message}\n";
+            else
+                message = $"Some other player said: {message}\n";
+
+            _messages.text += message;
+        }
     }
 }
