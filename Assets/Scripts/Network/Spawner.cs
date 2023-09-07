@@ -78,8 +78,13 @@ namespace ShooterPhotonFusion.Network
         {
         }
 
-        public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken)
+        public async void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken)
         {
+            Debug.Log("OnHostMigration");
+
+            await runner.Shutdown(shutdownReason: ShutdownReason.HostMigration);
+
+            FindObjectOfType<NetworkRunnerHandler>().StartHostMigration(hostMigrationToken);
         }
 
         public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ArraySegment<byte> data)
