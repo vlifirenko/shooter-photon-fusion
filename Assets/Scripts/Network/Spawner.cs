@@ -12,18 +12,52 @@ namespace ShooterPhotonFusion.Network
         [SerializeField] private NetworkPlayer playerPrefab;
 
         private CharacterInputHandler _characterInputHandler;
-        
-        public void OnConnectedToServer(NetworkRunner runner)
+        private Dictionary<int, NetworkPlayer> _mapTokenIDWithNetworkPlayer;
+
+        private void Awake() => _mapTokenIDWithNetworkPlayer = new Dictionary<int, NetworkPlayer>();
+
+        private int GetPlayerToken(NetworkRunner runner, PlayerRef player)
         {
-            Debug.Log("OnConnectedToServer");
+            if (runner.LocalPlayer == player)
+                return ConnectionTokenUtils.HashToken(GameManager.Instance.GetConnectionToken());
+            else
+            {
+                var token = runner.GetPlayerConnectionToken(player);
+                if (token != null)
+                    return ConnectionTokenUtils.HashToken(token);
+
+                Debug.LogError("GetPlayerToken returned invalid token");
+
+                return 0;
+            }
         }
+
+        public void OnConnectedToServer(NetworkRunner runner) => Debug.Log("OnConnectedToServer");
+
+        public void SetConnectionTokenMapping(int token, NetworkPlayer networkPlayer) => _mapTokenIDWithNetworkPlayer.Add(token, networkPlayer);
 
         public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
         {
             if (runner.IsServer)
             {
-                Debug.Log("OnPlayerJoined we are server. Spawning player");
-                runner.Spawn(playerPrefab, Utils.Utils.GetRandomSpawnPoint(), Quaternion.identity, player);
+                var playerToken = GetPlayerToken(runner, player);
+
+                Debug.Log($"OnPlayerJoined we are server. Connection token {playerToken}");
+
+                if (_mapTokenIDWithNetworkPlayer.TryGetValue(playerToken, out var networkPlayer))
+                {
+                    Debug.Log($"Found old connection token for token {playerToken}. Assigning controls to that player");
+                    networkPlayer.GetComponent<NetworkObject>().AssignInputAuthority(player);
+                }
+                else
+                {
+                    Debug.Log($"Spawning new player for connection token {playerToken}");
+                    var spawnedNetworkPlayer= runner.Spawn(playerPrefab, Utils.Utils.GetRandomSpawnPoint(), Quaternion.identity, player);
+
+                    spawnedNetworkPlayer.Token = playerToken;
+
+                    _mapTokenIDWithNetworkPlayer[playerToken] = spawnedNetworkPlayer;
+                }
             }
             else
                 Debug.Log("OnPlayerJoined");

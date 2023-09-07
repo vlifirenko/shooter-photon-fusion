@@ -26,7 +26,10 @@ namespace ShooterPhotonFusion
         private void Start()
         {
             if (_connectionToken == null)
+            {
                 _connectionToken = ConnectionTokenUtils.NewToken();
+                Debug.Log($"Player connection token {ConnectionTokenUtils.HashToken(_connectionToken)}");
+            }
         }
 
         public void SetConnectionToken(byte[] connectionToken) => _connectionToken = connectionToken;

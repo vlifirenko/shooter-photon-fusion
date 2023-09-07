@@ -82,7 +82,8 @@ namespace ShooterPhotonFusion.Network
                 //Initialized = initialized,
                 SceneManager = sceneManager,
                 HostMigrationToken = hostMigrationToken,
-                HostMigrationResume = HostMigrationResume
+                HostMigrationResume = HostMigrationResume,
+                ConnectionToken = GameManager.Instance.GetConnectionToken()
             });
         }
 
@@ -97,7 +98,16 @@ namespace ShooterPhotonFusion.Network
                     runner.Spawn(resumeNetworkObject,
                         characterController.ReadPosition(),
                         characterController.ReadRotation(),
-                        onBeforeSpawned: (_, newNetworkObject) => newNetworkObject.CopyStateFrom(resumeNetworkObject));
+                        onBeforeSpawned: (_, newNetworkObject) =>
+                        {
+                            newNetworkObject.CopyStateFrom(resumeNetworkObject);
+
+                            if (resumeNetworkObject.TryGetBehaviour<NetworkPlayer>(out var oldNetworkPlayer))
+                            {
+                                FindObjectOfType<Spawner>().SetConnectionTokenMapping(oldNetworkPlayer.Token,
+                                    newNetworkObject.GetComponent<NetworkPlayer>());
+                            }
+                        });
                 }
             }
 

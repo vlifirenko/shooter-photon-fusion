@@ -19,6 +19,8 @@ namespace ShooterPhotonFusion.Network
         [Networked(OnChanged = nameof(OnNicknameChanged))]
         public NetworkString<_16> NickName { get; set; }
 
+        [Networked] public int Token { get; set; }
+
         private bool _isPublicJoinMessageSent;
         private NetworkInGameMessages _networkInGameMessages;
 
@@ -67,7 +69,8 @@ namespace ShooterPhotonFusion.Network
                     if (playerLeftNetworkObject == Object)
                     {
                         Local.GetComponent<NetworkInGameMessages>()
-                            .SendInGameRPCMessage(playerLeftNetworkObject.GetComponent<NetworkPlayer>().NickName.ToString(), "left");
+                            .SendInGameRPCMessage(playerLeftNetworkObject.GetComponent<NetworkPlayer>().NickName.ToString(),
+                                "left");
                     }
                 }
             }
